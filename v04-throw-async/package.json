@@ -1,0 +1,9 @@
+{
+  "name": "v04-throw-async",
+  "version": "1.0.0",
+  "private": false,
+  "type": "module",
+  "main": "lib/index.js",
+  "files": ["lib/index.js", "cordis.patch.yml"],
+  "dsh": { "bundle": { "patch": "./cordis.patch.yml" } }
+}
