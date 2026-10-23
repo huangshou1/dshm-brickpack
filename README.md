@@ -117,4 +117,39 @@ Notes
 - v08 and v09 may be rejected by the installer because of their names. Treat
   that as install-time boundary information, not as a defect in the variant.
 - The v10 client declaration format is taken from the DSH-bundled plugin
-  template; it has not been installed or run here.
+  template; it has not been installed or run here.Field results (2026-10-24, DSHM core 0.2.1-alpha.1, phone)
+==========================================================
+
+All eleven variants were installed one at a time, each followed by a cold
+restart. Observed outcomes:
+
+- v00: activated normally (negative control, as designed).
+- v01, v02 (pending): no boot failure page. The host skips the entry and
+  continues startup; the plugin row shows a soft "waiting for dependency"
+  state, and the console prints
+  `dsh: warning: 1 entry did not activate ...: pending (waiting for
+  service: ...)`.
+- v03 (sync throw in apply): no failure page; row shows a soft error state.
+- v05, v06 (missing imports), v07 (syntax error): no failure page; row
+  shows a soft "not running" state; v07's console warning contains
+  `failed to import: SyntaxError: Unexpected token`. None of v05-v07 were
+  rejected by install-time validation.
+- v08, v09: same pending behavior as v01; the dotted id
+  `brickpack.dotted.v08` and the scoped id `@brickpack/scoped-v09` appear
+  verbatim in console warnings. Neither name was rejected by the installer.
+- v10 (broken client half): the ONLY variant that rendered a boot failure
+  page (`Failed to load plugins` + `web boot: 1 entry did not activate
+  v10-client-broken: import failed`). A rescue plugin's detect -> disable ->
+  reboot -> persist flow was verified end-to-end on this variant.
+- v04 (unawaited rejected Promise): host-level outage. The install UI
+  stalled with `waitForInstall failed: Failed to fetch` while the receipt
+  still printed success; cold boot then hung on the loading screen with no
+  failure page, so the rescue page never mounts. Uncontrolled consequences;
+  the device had to be reset. Test last, only on disposable devices.
+
+Implication: on core 0.2.1-alpha.1 the host tolerates host-side plugin
+defects (pending, throw, missing import, syntax error) and boots anyway.
+Only client-side load failures produce a failure page. To test a rescue
+plugin, prefer client-side defects (the v10 pattern); treat v04 as a
+host-level probe, not a routine test case.
+
