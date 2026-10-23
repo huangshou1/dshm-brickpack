@@ -1,4 +1,3 @@
-[Uploading README.md…]()
 # dshm-brickpack
 
 Deliberately broken dsh plugin packages for testing a rescue plugin's ability to
